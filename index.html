@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Nativo - medbasha</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1e1e">
+    <style>
+        :root {
+            --custom-gray: #707070; 
+            --bg-dark: #1e1e1e;
+            --bg-light: #f5f7fa;
+            --card-user: #2d2d2d;
+            --card-native: #e3f2fd;
+            --text-main: #333333;
+            --success-green: #2e7d32;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        header h1 {
+            color: var(--bg-dark);
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        header p {
+            color: var(--custom-gray);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .lang-btn {
+            background: none;
+            border: 2px solid transparent;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lang-btn.active {
+            border-color: #4285f4;
+            transform: scale(1.2);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            border: 1px solid rgba(112, 112, 112, 0.15);
+        }
+
+        .direction-badge {
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #e8f0fe;
+            color: #1a73e8;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .card-user {
+            background-color: var(--card-user);
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            opacity: 0.7;
+            font-weight: bold;
+        }
+
+        .transcript-display {
+            font-size: 20px;
+            line-height: 1.5;
+            min-height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-record {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s ease, opacity 0.3s;
+            color: white;
+        }
+
+        .btn-me { background: linear-gradient(135deg, #4285f4, #2b6cb0); }
+        .btn-client { background: linear-gradient(135deg, #4a5568, #2d3748); }
+        .btn-record:active { transform: scale(0.98); }
+
+        .btn-record.recording {
+            background: linear-gradient(135deg, #ea4335, #c53030) !important;
+            animation: pulse 1.5s infinite;
+        }
+
+        .card-native {
+            background-color: var(--card-native);
+            color: #0d47a1;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            border-left: 5px solid #1e88e5;
+        }
+
+        .card-native .card-label { color: #1e88e5; }
+
+        .native-text-display {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--bg-dark);
+        }
+
+        .btn-listen {
+            background: white;
+            color: #1e88e5;
+            border: 2px solid #1e88e5;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mode-indicator {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-left: 10px;
+            display: inline-block;
+        }
+        .mode-dict { background-color: #c8e6c9; color: #256029; }
+        .mode-web { background-color: #ffe0b2; color: #c66900; }
+
+        footer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: var(--custom-gray);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🗣️ Eco Nativo</h1>
+        <p>Traductor de Ruta Multifunción</p>
+    </header>
+
+    <div class="language-selector">
+        <button class="lang-btn active" onclick="setLanguage('en', '🇬🇧')" title="Inglés">🇬🇧</button>
+        <button class="lang-btn" onclick="setLanguage('fr', '🇫🇷')" title="Francés">🇫🇷</button>
+        <button class="lang-btn" onclick="setLanguage('de', '🇩🇪')" title="Alemán">🇩🇪</button>
+    </div>
+
+    <div class="app-container">
+        <div class="direction-badge" id="directionBadge">Conductor (ES) ➔ Cliente (EN)</div>
+        
+        <div class="card-user">
+            <div class="card-label" id="inputLabel">Escuchando en Español:</div>
+            <div class="transcript-display" id="transcript">Selecciona quién habla abajo para comenzar...</div>
+            
+            <div class="action-buttons">
+                <button class="btn-record btn-me" id="btnRecordMe">
+                    <span>🎙️</span> <span id="textMe">Hablar Yo (Español)</span>
+                </button>
+                <button class="btn-record btn-client" id="btnRecordClient">
+                    <span>🗣️</span> <span id="textClient">Habla Cliente (Inglés)</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-native" id="cardNative">
+            <div class="card-label">
+                <span id="outputLabel">Traducción (Inglés):</span>
+                <span id="modeBadge" class="mode-indicator"></span>
+            </div>
+            <div class="native-text-display" id="nativeText">...</div>
+            
+            <button class="btn-listen" id="btnListen">
+                🔊 Escuchar Voz Remota
+            </button>
+        </div>
+    </div>
+
+    <footer>medbasha</footer>
+
+    <script>
+        let currentTargetLang = 'en';
+        let currentTargetFlag = '🇬🇧';
+        let currentSpeaker = 'me'; 
+
+        const langNames = { 'en': 'Inglés', 'fr': 'Francés', 'de': 'Alemán', 'es': 'Español' };
+
+        // DICCIONARIO INTELIGENTE DE TRABAJO (Aquí puedes añadir o cambiar las frases que quieras)
+        const diccionarioRuta = {
+            'es': {
+                'buenos días': { en: 'Good morning', fr: 'Bonjour', de: 'Guten Morgen' },
+                'hola': { en: 'Hello', fr: 'Salut', de: 'Hallo' },
+                'el billete cuesta dos euros': { en: 'The ticket costs two euros', fr: 'Le ticket coûte deux euros', de: 'Das Ticket kostet zwei Euro' },
+                'este autobús va a ciudadela': { en: 'This bus goes to Ciudadela', fr: 'Ce bus va à Ciudadela', de: 'Dieser Bus fährt nach Ciudadela' },
+                'este autobús va a mahón': { en: 'This bus goes to Mahón', fr: 'Ce bus va à Mahón', de: 'Dieser Bus fährt nach Mahón' },
+                'esta tarjeta está caducada tengo que retirarla': { en: 'This card is expired, I must withdraw it', fr: 'Cette carte est expirée, je dois la retirer', de: 'Diese Karte ist abgelaufen, ich muss sie einziehen' },
+                'por favor espere detrás de la línea': { en: 'Please wait behind the line', fr: 'Veuillez attendre derrière la ligne', de: 'Bitte warten Sie hinter der Linie' }
+            },
+            'en': {
+                'good morning': 'buenos días',
+                'hello': 'hola',
+                'how much is the ticket': 'cuánto cuesta el billete',
+                'does this bus go to ciudadela': 'este autobús va a ciudadela'
+            },
+            'fr': {
+                'bonjour': 'buenos días',
+                'salut': 'hola',
+                'combien coûte le ticket': 'cuánto cuesta el billete'
+            },
+            'de': {
+                'guten morgen': 'buenos días',
+                'hallo': 'hola',
+                'was kostet das ticket': 'cuánto cuesta el billete'
+            }
+        };
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const synth = window.speechSynthesis;
+        const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+        const btnRecordMe = document.getElementById('btnRecordMe');
+        const btnRecordClient = document.getElementById('btnRecordClient');
+        const transcriptDisplay = document.getElementById('transcript');
+        const cardNative = document.getElementById('cardNative');
+        const nativeText = document.getElementById('nativeText');
+        const btnListen = document.getElementById('btnListen');
+        const directionBadge = document.getElementById('directionBadge');
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+        const modeBadge = document.getElementById('modeBadge');
+
+        let isRecording = false;
+        let textToSpeak = "";
+        let speechLangTarget = "en-US";
+        let shouldSpeak = true;
+
+        function setLanguage(lang, flag) {
+            if(isRecording) return;
+            currentTargetLang = lang;
+            currentTargetFlag = flag;
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === flag) btn.classList.add('active');
+            });
+
+            document.getElementById('textClient').innerText = `Habla Cliente (${langNames[lang]})`;
+            actualizarDireccion();
+        }
+
+        function actualizarDireccion() {
+            if (currentSpeaker === 'me') {
+                directionBadge.innerText = `Conductor (ES) ➔ Cliente (${currentTargetLang.toUpperCase()})`;
+                inputLabel.innerText = "Escuchando en Español:";
+                outputLabel.innerText = `Traducción (${langNames[currentTargetLang]}):`;
+            } else {
+                directionBadge.innerText = `Cliente (${currentTargetLang.toUpperCase()}) ➔ Conductor (ES)`;
+                inputLabel.innerText = `Escuchando en ${langNames[currentTargetLang]}:`;
+                outputLabel.innerText = "Traducción (Español):";
+            }
+        }
+
+        function iniciarGrabacion(speaker) {
+            if (!recognition) return;
+            
+            currentSpeaker = speaker;
+            isRecording = true;
+            actualizarDireccion();
+            cardNative.style.display = "none";
+
+            if (currentSpeaker === 'me') {
+                recognition.lang = 'es-ES';
+                btnRecordMe.classList.add('recording');
+                document.getElementById('textMe').innerText = "Escuchando...";
+                btnRecordClient.style.opacity = "0.4";
+            } else {
+                recognition.lang = currentTargetLang === 'en' ? 'en-US' : currentTargetLang === 'fr' ? 'fr-FR' : 'de-DE';
+                btnRecordClient.classList.add('recording');
+                document.getElementById('textClient').innerText = "Escuchando...";
+                btnRecordMe.style.opacity = "0.4";
+            }
+
+            transcriptDisplay.innerText = "Habla ahora...";
+            recognition.start();
+        }
+
+        if (recognition) {
+            btnRecordMe.addEventListener('click', () => {
+                if (!isRecording) iniciarGrabacion('me');
+                else recognition.stop();
+            });
+
+            btnRecordClient.addEventListener('click', () => {
+                if (!isRecording) iniciarGrabacion('client');
+                else recognition.stop();
+            });
+
+            recognition.onend = () => {
+                isRecording = false;
+                btnRecordMe.classList.remove('recording');
+                btnRecordClient.classList.remove('recording');
+                document.getElementById('textMe').innerText = "Hablar Yo (Español)";
+                document.getElementById('textClient').innerText = `Habla Cliente (${langNames[currentTargetLang]})`;
+                btnRecordMe.style.opacity = "1";
+                btnRecordClient.style.opacity = "1";
+            };
+
+            recognition.onresult = async (event) => {
+                let textResult = event.results[0][0].transcript;
+                // Limpiar texto para buscar coincidencias exactas en el diccionario
+                let fraseLimpia = textResult.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
+                transcriptDisplay.innerText = textResult;
+
+                let traduccion = "";
+                let encontradoEnDiccionario = false;
+
+                if (currentSpeaker === 'me') {
+                    // El conductor habla español
+                    if (diccionarioRuta['es'][fraseLimpia] && diccionarioRuta['es'][fraseLimpia][currentTargetLang]) {
+                        traduccion = diccionarioRuta['es'][fraseLimpia][currentTargetLang];
+                        encontradoEnDiccionario = true;
+                    }
+                } else {
+                    // El cliente habla su idioma
+                    if (diccionarioRuta[currentTargetLang] && diccionarioRuta[currentTargetLang][fraseLimpia]) {
+                        traduccion = diccionarioRuta[currentTargetLang][fraseLimpia];
+                        encontradoEnDiccionario = true;
+                    }
+                }
+
+                if (encontradoEnDiccionario) {
+                    // CASO 1: Está en el diccionario de trabajo -> Mostrar Escrito + Voz Natural
+                    modeBadge.innerText = "Trabajo (Voz + Texto)";
+                    modeBadge.className = "mode-indicator mode-dict";
+                    btnListen.style.display = "inline-flex";
+                    shouldSpeak = true;
+                    
+                    nativeText.innerText = traduccion;
+                    textToSpeak = traduccion;
+                    let toLang = currentSpeaker === 'me' ? currentTargetLang : 'es';
+                    speechLangTarget = toLang === 'es' ? 'es-ES' : toLang === 'en' ? 'en-US' : toLang === 'fr' ? 'fr-FR' : 'de-DE';
+                    
+                    cardNative.style.display = "block";
+                    reproducirVoz();
+                } else {
+                    // CASO 2: Fuera del diccionario -> Solo escrito (Traductor Web)
+                    modeBadge.innerText = "Consulta (Solo Texto)";
+                    modeBadge.className = "mode-indicator mode-web";
+                    btnListen.style.display = "none"; // Ocultamos el botón de reproducir audio
+                    shouldSpeak = false;
+
+                    transcriptDisplay.innerText = textResult + " (Traduciendo...)";
+                    
+                    let from = currentSpeaker === 'me' ? 'es' : currentTargetLang;
+                    let to = currentSpeaker === 'me' ? currentTargetLang : 'es';
+
+                    try {
+                        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textResult)}&langpair=${from}|${to}`);
+                        const data = await res.json();
+                        traduccion = data.responseData.translatedText;
+
+                        transcriptDisplay.innerText = textResult;
+                        nativeText.innerText = traduccion;
+                        cardNative.style.display = "block";
+                    } catch (err) {
+                        console.error(err);
+                        transcriptDisplay.innerText = textResult + " (Error de red)";
+                    }
+                }
+            };
+        }
+
+        function reproducirVoz() {
+            if (!textToSpeak || !shouldSpeak) return;
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            const voces = synth.getVoices();
+            const vozCorrecta = voces.find(v => v.lang.startsWith(speechLangTarget));
+            if (vozCorrecta) utterance.voice = vozCorrecta;
+            utterance.rate = 0.95;
+            synth.speak(utterance);
+        }
+
+        btnListen.addEventListener('click', reproducirVoz);
+
+        if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = synth.getVoices;
+        }
+    </script>
+</body>
+</html>
